@@ -16,7 +16,7 @@ test('successful login with valid credentials', async ({ page }) => {
     await loginPage.goto();
     await loginPage.loginWithValidUser();
 
-    await expect(page.locator('a:has-text("Logout")')).toBeVisible();
+    await expect(loginPage.logoutLink).toBeVisible();
 });
 
 test('shows validation error when email is empty', async ({ page }) => {
@@ -51,4 +51,17 @@ test('shows validation error when password is empty', async ({ page }) => {
 
     expect(isValid).toBe(false);
     expect(validationMessage).not.toBe('');
+});
+
+test('user can logout and is redirected to login page', async ({ page }) => {
+    const loginPage = new LoginPage(page);
+
+    await loginPage.goto();
+    await loginPage.loginWithValidUser();
+
+    await expect(page.locator('a:has-text("Logout")')).toBeVisible();
+
+    await loginPage.logout();
+
+    await expect(page).toHaveURL(/\/login/);
 });
